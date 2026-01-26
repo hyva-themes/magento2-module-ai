@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Hyva\Ai\Controller\Adminhtml\Ai;
 
-use Hyva\Ai\Api\ProviderInterface;
 use Hyva\Ai\Api\HandlerInterface;
+use Hyva\Ai\Api\ProviderPoolInterface;
 use Hyva\Ai\Api\ProviderResolverInterface;
 use Hyva\Ai\Model\ErrorHandler;
 use Magento\Backend\App\Action;
@@ -35,7 +35,7 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
         private readonly JsonSerializer $jsonSerializer,
         private readonly ErrorHandler $errorHandler,
         private readonly ProviderResolverInterface $providerResolver,
-        private readonly array $providers = [],
+        private readonly ProviderPoolInterface $providerPool,
         private readonly array $handlers = []
     ) {
         parent::__construct($context);
@@ -97,13 +97,9 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
         }
     }
 
-    private function getProvider(string $providerName): ProviderInterface
+    private function getProvider(string $providerName): \Hyva\Ai\Api\ProviderInterface
     {
-        if (!isset($this->providers[$providerName])) {
-            throw new LocalizedException(__('AI provider "%1" is not available.', $providerName));
-        }
-
-        return $this->providers[$providerName];
+        return $this->providerPool->get($providerName);
     }
 
     private function getHandler(string $handlerName): HandlerInterface

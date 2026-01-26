@@ -38,10 +38,11 @@ class ProviderResolver implements ProviderResolverInterface
 
         foreach ($this->providerModels as $providerConfig) {
             $sourceModelClass = $providerConfig['source_model'] ?? null;
+            $modelOptions = $providerConfig['options'] ?? [];
 
             if ($sourceModelClass && class_exists($sourceModelClass)) {
                 try {
-                    $sourceModel = new $sourceModelClass();
+                    $sourceModel = new $sourceModelClass($modelOptions);
                     if ($sourceModel instanceof OptionSourceInterface) {
                         $providerOptions = $sourceModel->toOptionArray();
 
@@ -61,6 +62,11 @@ class ProviderResolver implements ProviderResolverInterface
         return $options;
     }
 
+    public function getProviderConfigurations(): array
+    {
+        return $this->providerModels;
+    }
+
     /**
      * Get mapping of model values to their providers
      */
@@ -70,10 +76,11 @@ class ProviderResolver implements ProviderResolverInterface
 
         foreach ($this->providerModels as $provider => $providerConfig) {
             $sourceModelClass = $providerConfig['source_model'] ?? null;
+            $modelOptions = $providerConfig['options'] ?? [];
 
             if ($sourceModelClass && class_exists($sourceModelClass)) {
                 try {
-                    $sourceModel = new $sourceModelClass();
+                    $sourceModel = new $sourceModelClass($modelOptions);
                     if ($sourceModel instanceof OptionSourceInterface) {
                         $providerOptions = $sourceModel->toOptionArray();
 

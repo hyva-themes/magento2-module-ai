@@ -26,4 +26,12 @@ interface ProviderResolverInterface
      * @return array
      */
     public function getAvailableModelOptions(): array;
+
+    /**
+     * Get all provider configurations
+     * Returns array keyed by provider ID with their configuration
+     *
+     * @return array
+     */
+    public function getProviderConfigurations(): array;
 }

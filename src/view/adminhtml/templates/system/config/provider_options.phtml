@@ -1,0 +1,193 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+declare(strict_types=1);
+
+use Hyva\Ai\Block\Adminhtml\System\Config\ProviderOptions;
+use Magento\Framework\Escaper;
+
+/**
+ * @var ProviderOptions $block
+ * @var Escaper $escaper
+ */
+
+$elementId = $block->getHtmlId();
+$elementName = $block->getElement()->getName();
+$modelFieldId = $block->getModelFieldId();
+$schemasJson = $block->getSchemasJson();
+$currentValuesJson = $block->getCurrentValuesJson();
+$msgSelectModel = $block->escapeJs(__('Select an AI model above to configure provider-specific options.'));
+$msgNoOptions = $block->escapeJs(__('This provider has no configurable options.'));
+?>
+<textarea
+    id="<?= $block->escapeHtmlAttr($elementId) ?>"
+    name="<?= $block->escapeHtmlAttr($elementName) ?>"
+    class="provider-options-textarea"
+><?= $block->escapeHtml($block->getValueAsJson()) ?></textarea>
+
+<div id="<?= $block->escapeHtmlAttr($elementId) ?>_container" class="provider-options-container">
+    <p class="note">
+        <span><?= $block->escapeHtml(__('Select an AI model above to configure provider-specific options.')) ?></span>
+    </p>
+</div>
+
+<script>
+require(['jquery'], ($) => {
+    'use strict';
+
+    const schemas = <?= /** @noEscape */ $schemasJson ?>;
+    const currentValues = <?= /** @noEscape */ $currentValuesJson ?>;
+    const elementId = '<?= $block->escapeJs($elementId) ?>';
+    const modelFieldId = '<?= $block->escapeJs($modelFieldId) ?>';
+    const msgSelectModel = '<?= /** @noEscape */ $msgSelectModel ?>';
+    const msgNoOptions = '<?= /** @noEscape */ $msgNoOptions ?>';
+
+    const escapeHtml = (text) => {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return String(text).replace(/[&<>"']/g, (m) => map[m]);
+    };
+
+    const fieldTemplate = (id, label, input, comment) => `
+        <div class="admin__field field-${escapeHtml(id)}" style="margin: 10px 0;">
+            <label class="label admin__field-label">
+                <span>${escapeHtml(label)}</span>
+            </label>
+            <div class="admin__field-control">
+                ${input}
+                ${comment ? `<p class="note"><span>${escapeHtml(comment)}</span></p>` : ''}
+            </div>
+        </div>
+    `;
+
+    const renderInput = (field, value) => {
+        const fieldId = `${elementId}_${field.id}`;
+        value = value !== undefined ? value : field.default;
+
+        switch (field.type) {
+            case 'boolean':
+                const checked = value ? ' checked="checked"' : '';
+                return `
+                    <input type="checkbox" id="${fieldId}"
+                        class="provider-option-field"
+                        data-field-id="${field.id}" value="1"${checked} />
+                `;
+
+            case 'select':
+                let options = '';
+                if (field.options) {
+                    field.options.forEach((option) => {
+                        const selected = value == option.value ? ' selected="selected"' : '';
+                        options += `<option value="${escapeHtml(option.value)}"${selected}>${escapeHtml(option.label)}</option>`;
+                    });
+                }
+                return `
+                    <select id="${fieldId}"
+                        class="provider-option-field"
+                        data-field-id="${field.id}">
+                        ${options}
+                    </select>
+                `;
+
+            case 'number':
+                const validateClass = field.validate ? ` ${field.validate}` : '';
+                return `
+                    <input type="text" id="${fieldId}"
+                        class="provider-option-field${validateClass}"
+                        data-field-id="${field.id}" value="${escapeHtml(value || '')}" />
+                `;
+
+            case 'text':
+            default:
+                return `
+                    <input type="text" id="${fieldId}"
+                        class="provider-option-field"
+                        data-field-id="${field.id}" value="${escapeHtml(value || '')}" />
+                `;
+        }
+    };
+
+    const renderFields = (modelId) => {
+        const container = $(`#${elementId}_container`);
+        container.empty();
+
+        if (!modelId || !schemas[modelId]) {
+            container.html(`<p class="note"><span>${msgSelectModel}</span></p>`);
+            return;
+        }
+
+        const schema = schemas[modelId];
+        const fields = schema.fields;
+
+        if (!fields || fields.length === 0) {
+            container.html(`<p class="note"><span>${msgNoOptions}</span></p>`);
+            return;
+        }
+
+        fields.forEach((field) => {
+            const value = currentValues[field.id];
+            const inputHtml = renderInput(field, value);
+            const html = fieldTemplate(field.id, field.label, inputHtml, field.comment);
+
+            container.append(html);
+        });
+
+        $('.provider-option-field').on('change', serializeValues);
+        serializeValues();
+    };
+
+    const serializeValues = () => {
+        const values = {};
+        $('.provider-option-field').each(function() {
+            const $field = $(this);
+            const fieldId = $field.data('field-id');
+
+            if ($field.is(':checkbox')) {
+                values[fieldId] = $field.is(':checked') ? true : false;
+            } else {
+                const val = $field.val();
+                values[fieldId] = val === '' ? null : val;
+            }
+        });
+
+        $(`#${elementId}`).val(JSON.stringify(values));
+    };
+
+    const init = () => {
+        if (!modelFieldId) {
+            console.warn('ProviderOptions: modelFieldId not configured');
+            return;
+        }
+
+        const $modelField = $(`#${modelFieldId}`);
+
+        if ($modelField.length) {
+            renderFields($modelField.val());
+            $modelField.on('change', () => renderFields($modelField.val()));
+        }
+    };
+
+    $(document).ready(() => init());
+});
+</script>
+
+<style>
+.provider-options-textarea {
+    display: none;
+}
+
+.provider-options-container {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 0 16px;
+}
+</style>
