@@ -1,5 +1,5 @@
 {
-  "name": "hyva-themes/module-ai",
+  "name": "hyva-themes/magento2-module-ai",
   "description": "Hyva_Ai module",
   "type": "magento2-module",
   "require": {
