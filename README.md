@@ -23,4 +23,5 @@ Note: this modules contains the base framework only, integrations with specific 
 1. Run `bin/magento setup:upgrade`
 
 ## Documentation
-Coming soon.
+
+[https://docs.hyva.io/hyva-themes/ai/features-providers/index.html](https://docs.hyva.io/hyva-themes/ai/features-providers/index.html)
