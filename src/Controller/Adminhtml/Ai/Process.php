@@ -11,9 +11,12 @@ namespace Hyva\Ai\Controller\Adminhtml\Ai;
 use Hyva\Ai\Api\HandlerInterface;
 use Hyva\Ai\Api\ProviderPoolInterface;
 use Hyva\Ai\Api\ProviderResolverInterface;
+use Hyva\Ai\Exception\ConcurrencyLimitExceededException;
 use Hyva\Ai\Model\ErrorHandler;
+use Hyva\Ai\Model\ConcurrencyGuard;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
@@ -33,8 +36,10 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
         private readonly JsonFactory $resultJsonFactory,
         private readonly JsonSerializer $jsonSerializer,
         private readonly ErrorHandler $errorHandler,
+        private readonly ScopeConfigInterface $scopeConfig,
         private readonly ProviderResolverInterface $providerResolver,
         private readonly ProviderPoolInterface $providerPool,
+        private readonly ConcurrencyGuard $concurrencyGuard,
         private readonly array $handlers = []
     ) {
         parent::__construct($context);
@@ -45,6 +50,7 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
         $result = $this->resultJsonFactory->create();
 
         try {
+            $lockName = '';
             $handler = $this->getRequest()->getParam('handler');
 
             if (!$handler) {
@@ -65,22 +71,38 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
                 default => throw new LocalizedException(__('Invalid request method.'))
             };
 
-            $handlerData = $handlerInstance->getData($requestData);
-            $providerResponse = $providerInstance->process($handlerData, $handlerInstance->getOptions());
+            try {
+                $lockName = $this->concurrencyGuard->acquire();
+                $this->applyRequestTimeout();
 
-            $processedData = method_exists($handlerInstance, 'processResponse')
-                ? $handlerInstance->processResponse($providerResponse, $handlerData)
-                : $providerResponse;
+                $handlerData = $handlerInstance->getData($requestData);
+                $providerResponse = $providerInstance->process($handlerData, $handlerInstance->getOptions());
 
+                $processedData = method_exists($handlerInstance, 'processResponse')
+                    ? $handlerInstance->processResponse($providerResponse, $handlerData)
+                    : $providerResponse;
+
+                return $result->setData([
+                    'success' => true,
+                    'provider' => $provider,
+                    'handler' => $handler,
+                    'data' => $processedData,
+                    'count' => is_countable($processedData) ? count($processedData) : 1,
+                    'message' => __('AI processing completed successfully.')
+                ]);
+            } finally {
+                if ($lockName !== '') {
+                    $this->concurrencyGuard->release($lockName);
+                }
+            }
+
+        } catch (ConcurrencyLimitExceededException $e) {
+            $this->errorHandler->logError($e);
             return $result->setData([
-                'success' => true,
-                'provider' => $provider,
-                'handler' => $handler,
-                'data' => $processedData,
-                'count' => is_countable($processedData) ? count($processedData) : 1,
-                'message' => __('AI processing completed successfully.')
+                'success' => false,
+                'code' => 429,
+                'message' => $e->getMessage()
             ]);
-
         } catch (LocalizedException $e) {
             $this->errorHandler->logError($e);
             return $result->setData([
@@ -147,6 +169,27 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
     {
         return null;
+    }
+
+    private function applyRequestTimeout(): void
+    {
+        $timeout = (int) ($this->scopeConfig->getValue(
+            ConcurrencyGuard::XML_PATH_REQUEST_TIMEOUT_SECONDS
+        ) ?? 0);
+
+        if ($timeout <= 0) {
+            return;
+        }
+
+        if (!function_exists('set_time_limit')) {
+            return;
+        }
+
+        try {
+            set_time_limit($timeout);
+        } catch (\Throwable $e) {
+            // Ignore failures; PHP configuration may disallow set_time_limit()
+        }
     }
 
     public function validateForCsrf(RequestInterface $request): ?bool
