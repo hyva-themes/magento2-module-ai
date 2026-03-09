@@ -25,6 +25,35 @@ class ConcurrencyGuard
     }
 
     /**
+     * Slot lock name prefix. Slot names are hyva_ai_concurrent_slot_1, hyva_ai_concurrent_slot_2, ...
+     */
+    private const LOCK_NAME_PREFIX = 'hyva_ai_concurrent_slot_';
+
+    /**
+     * Get the list of concurrency slot lock names (based on max_concurrent_requests config).
+     *
+     * @return list<string>
+     */
+    public function getSlotNames(): array
+    {
+        $max = (int) ($this->scopeConfig->getValue(
+            self::XML_PATH_MAX_CONCURRENT_REQUESTS,
+            ScopeInterface::SCOPE_STORE
+        ) ?? 0);
+
+        if ($max <= 0) {
+            return [];
+        }
+
+        $names = [];
+        for ($i = 1; $i <= $max; $i++) {
+            $names[] = self::LOCK_NAME_PREFIX . $i;
+        }
+
+        return $names;
+    }
+
+    /**
      * Attempt to acquire a concurrency slot.
      *
      * @return string Acquired lock name
@@ -32,17 +61,13 @@ class ConcurrencyGuard
      */
     public function acquire(): string
     {
-        $max = (int) ($this->scopeConfig->getValue(
-            self::XML_PATH_MAX_CONCURRENT_REQUESTS,
-            ScopeInterface::SCOPE_STORE
-        ) ?? 1);
+        $slots = $this->getSlotNames();
 
-        if ($max < 1) {
-            $max = 1;
+        if (empty($slots)) {
+            return '';
         }
 
-        for ($i = 1; $i <= $max; $i++) {
-            $lockName = 'hyva_ai_concurrent_slot_' . $i;
+        foreach ($slots as $lockName) {
             if ($this->lockManager->lock($lockName, 0)) {
                 return $lockName;
             }
@@ -63,5 +88,22 @@ class ConcurrencyGuard
         }
 
         $this->lockManager->unlock($lockName);
+    }
+
+    /**
+     * Get the number of concurrency slots that are currently locked.
+     *
+     * @return int Number of slots currently held (by this or other processes)
+     */
+    public function getActiveLockCount(): int
+    {
+        $count = 0;
+        foreach ($this->getSlotNames() as $lockName) {
+            if ($this->lockManager->isLocked($lockName)) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 }

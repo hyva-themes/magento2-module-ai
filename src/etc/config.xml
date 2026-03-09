@@ -11,7 +11,7 @@
         <hyva_ai>
             <runtime>
                 <max_concurrent_requests>2</max_concurrent_requests>
-                <request_timeout_seconds>30</request_timeout_seconds>
+                <request_timeout_seconds>60</request_timeout_seconds>
             </runtime>
         </hyva_ai>
     </default>

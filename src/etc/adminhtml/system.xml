@@ -19,20 +19,21 @@
                 AI requests can take several seconds to complete. If too many run at once, or if individual requests run too long, the rest of the site can slow down or become unresponsive. <br>
                 Use these settings to limit how many AI requests run at the same time and how long each one may run.
                 ]]></comment>
-                <field id="max_concurrent_requests" translate="label comment" type="text"  sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Max Concurrent AI Requests</label>
-                    <comment>How many AI requests can run at the same time. Keeps total AI load in check so the rest of the site stays responsive. Set to 0 to disable the limit.</comment>
-                    <validate>digits</validate>
-                </field>
-                <field id="request_timeout_seconds" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="request_timeout_seconds" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>AI Request Timeout (seconds)</label>
                     <comment><![CDATA[
                         This specifies how long a single AI request is allowed to run. If the request exceeds this time, it will be stopped (best-effort; only applies where supported by the provider implementation).<br><br>
-                        Choose a value that aligns with your AI requirements. Keep in mind that PHP, your web server, and your CDN (e.g. Nginx, Apache, or Cloudflare) may have their own timeout settings.
+                        Choose a value that aligns with your AI requirements. Keep in mind your web server and your CDN (e.g. Nginx, Apache, or Cloudflare) may have their own timeout settings.
                         It's best to <strong>use the same value or a lower one</strong> so that this limit is the one that applies. <br><br>
                         Set to 0 to disable this setting and use system default.
                     ]]></comment>
                     <validate>digits</validate>
+                </field>
+                <field id="max_concurrent_requests" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Max Concurrent AI Requests</label>
+                    <comment><![CDATA[How many AI requests can run at the same time. This setting uses the Magento locking system to keep total AI load in check so the rest of the site stays responsive. For more information, see the <a href="https://experienceleague.adobe.com/en/docs/commerce-operations/installation-guide/tutorials/lock-provider" target="_blank" rel="noopener noreferrer">Adobe Commerce lock provider documentation</a>.<br><br>Set to 0 to disable the limit.]]></comment>
+                    <validate>digits</validate>
+                    <frontend_model>Hyva\Ai\Block\Adminhtml\System\Config\ConcurrencyStatusField</frontend_model>
                 </field>
             </group>
         </section>
