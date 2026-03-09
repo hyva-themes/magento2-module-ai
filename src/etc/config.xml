@@ -11,7 +11,7 @@
         <hyva_ai>
             <runtime>
                 <max_concurrent_requests>2</max_concurrent_requests>
-                <request_timeout_seconds>60</request_timeout_seconds>
+                <request_timeout_seconds>59</request_timeout_seconds> <!-- 59 to be lower than Nginx and Apache default timeouts -->
             </runtime>
         </hyva_ai>
     </default>
