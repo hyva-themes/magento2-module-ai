@@ -19,18 +19,18 @@ $elementName = $block->getElement()->getName();
 $modelFieldId = $block->getModelFieldId();
 $schemasJson = $block->getSchemasJson();
 $currentValuesJson = $block->getCurrentValuesJson();
-$msgSelectModel = $block->escapeJs(__('Select an AI model above to configure provider-specific options.'));
-$msgNoOptions = $block->escapeJs(__('This provider has no configurable options.'));
+$msgSelectModel = $escaper->escapeJs(__('Select an AI model above to configure provider-specific options.'));
+$msgNoOptions = $escaper->escapeJs(__('This provider has no configurable options.'));
 ?>
 <textarea
-    id="<?= $block->escapeHtmlAttr($elementId) ?>"
-    name="<?= $block->escapeHtmlAttr($elementName) ?>"
+    id="<?= $escaper->escapeHtmlAttr($elementId) ?>"
+    name="<?= $escaper->escapeHtmlAttr($elementName) ?>"
     class="provider-options-textarea"
-><?= $block->escapeHtml($block->getValueAsJson()) ?></textarea>
+><?= $escaper->escapeHtml($block->getValueAsJson()) ?></textarea>
 
-<div id="<?= $block->escapeHtmlAttr($elementId) ?>_container" class="provider-options-container">
+<div id="<?= $escaper->escapeHtmlAttr($elementId) ?>_container" class="provider-options-container">
     <p class="note">
-        <span><?= $block->escapeHtml(__('Select an AI model above to configure provider-specific options.')) ?></span>
+        <span><?= $escaper->escapeHtml(__('Select an AI model above to configure provider-specific options.')) ?></span>
     </p>
 </div>
 
@@ -40,8 +40,8 @@ require(['jquery'], ($) => {
 
     const schemas = <?= /** @noEscape */ $schemasJson ?>;
     const currentValues = <?= /** @noEscape */ $currentValuesJson ?>;
-    const elementId = '<?= $block->escapeJs($elementId) ?>';
-    const modelFieldId = '<?= $block->escapeJs($modelFieldId) ?>';
+    const elementId = '<?= $escaper->escapeJs($elementId) ?>';
+    const modelFieldId = '<?= $escaper->escapeJs($modelFieldId) ?>';
     const msgSelectModel = '<?= /** @noEscape */ $msgSelectModel ?>';
     const msgNoOptions = '<?= /** @noEscape */ $msgNoOptions ?>';
 

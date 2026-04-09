@@ -18,9 +18,6 @@ use Hyva\Ai\Api\Provider\OptionsSchemaInterface;
  */
 abstract class AbstractOptionsSchema implements OptionsSchemaInterface
 {
-    /**
-     * @inheritdoc
-     */
     public function normalizeOptions(array $options): array
     {
         $fields = $this->getFields();
