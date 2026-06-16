@@ -1,0 +1,20 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes. All rights reserved.
+ * See COPYING.txt for license details.
+ *
+ * @var \Hyva\Ai\Block\Adminhtml\System\Config\ConcurrencyStatusField $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$activeCount = $block->getActiveLockCount();
+$maxSlots    = $block->getMaxSlots();
+$backendLabel = $block->getLockBackendLabel();
+$docsUrl     = $block->getLockProviderDocsUrl();
+?>
+<p class="note" style="margin-top: 0.5em;">
+    <?= $escaper->escapeHtml(__('%1 of %2 slot(s) currently in use.', $activeCount, $maxSlots)) ?>
+    <?php if ($maxSlots === 0): ?>
+        <?= $escaper->escapeHtml(__('(disabled)')) ?>
+    <?php endif; ?>
+</p>

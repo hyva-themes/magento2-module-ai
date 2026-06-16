@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 [Unreleased]: https://gitlab.hyva.io/hyva-themes/ai/module-ai/-/compare/1.0.0...main
 
 ### Added
+- Configuration for Runtime Safeguards to limit the number of concurrent AI requests and the timeout for each request.
+As AI API requests can take several seconds to complete, this makes sure that the rest of the site stays responsive.
 - New system config tab and logo
 
 ### Changed
