@@ -19,6 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - Nothing removed
 
+## [1.2.0] - 2026-07-03
+
+### Added
+- New ToolCapableProviderInterface so Providers can be marked as "Tools are available", see the [Anthropic provider](https://gitlab.hyva.io/hyva-themes/ai/module-ai-anthropic/)
+
 ## [1.1.0] - 2026-06-30
 
 ### Added
