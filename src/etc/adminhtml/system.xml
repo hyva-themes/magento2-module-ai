@@ -9,14 +9,29 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="hyva_ai" sortOrder="990" class="hyva-ai-config-tab">
-            <label>Hyvä AI Providers</label>
+            <label>Hyvä AI</label>
         </tab>
 
         <section id="hyva_ai" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
-            <label>General</label>
+            <label>Settings</label>
             <tab>hyva_ai</tab>
             <resource>Magento_Backend::content</resource>
+            <group id="overview" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Getting started</label>
+                <frontend_model>Hyva\Ai\Block\Adminhtml\System\Config\Introduction</frontend_model>
+                <field id="guide" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Hyva\Ai\Block\Adminhtml\System\Config\Overview</frontend_model>
+                </field>
+            </group>
+            <group id="execution" translate="label" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <field id="mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Run requests using</label>
+                    <source_model>Hyva\Ai\Model\Config\Source\ExecutionMode</source_model>
+                    <comment>The default for all AI features. Feature settings, such as those under Hyvä CMS, can override it. Keep existing feature choices preserves your current setup. Providers without a worker adapter continue to run directly.</comment>
+                </field>
+            </group>
             <group id="runtime" translate="label comment" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Runtime Safeguards</label>
                 <comment><![CDATA[
@@ -29,7 +44,7 @@
                         This specifies how long a single AI request is allowed to run. If the request exceeds this time, it will be stopped (best-effort; only applies where supported by the provider implementation).<br><br>
                         Choose a value that aligns with your AI requirements. Keep in mind your web server and your CDN (e.g. Nginx, Apache, or Cloudflare) may have their own timeout settings.
                         It's best to <strong>use the same value or a lower one</strong> so that this limit is the one that applies. <br><br>
-                        Set to 0 to disable this setting and use system default.
+                        Set to 0 to use the safe 25-second default. PHP requests share the remaining request budget; use worker jobs for longer work. Server configuration is never changed.
                     ]]></comment>
                     <validate>digits</validate>
                 </field>

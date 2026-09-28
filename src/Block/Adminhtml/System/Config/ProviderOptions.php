@@ -37,7 +37,12 @@ class ProviderOptions extends Field
         private readonly ProviderResolverInterface $providerResolver,
         private readonly SerializerInterface $serializer,
         private readonly string $modelFieldId = '',
-        array $data = []
+        array $data = [],
+        private readonly ?\Hyva\Ai\Model\ModelCatalog $catalog = null,
+        private readonly ?\Hyva\Ai\Model\ExecutionConfig $executionConfig = null,
+        private readonly string $capability = '',
+        private readonly bool $workerOnly = false,
+        private readonly string $executionFieldId = ''
     ) {
         parent::__construct($context, $data);
     }
@@ -109,6 +114,17 @@ class ProviderOptions extends Field
     /**
      * Get schemas data as JSON for JavaScript
      */
+    public function getPickerJson(): string
+    {
+        return json_encode([
+            'providers' => ($this->catalog ?? new \Hyva\Ai\Model\ModelCatalog($this->providerResolver, $this->optionsSchemaPool))->getProviders(),
+            'capability' => $this->capability,
+            'workerOnly' => $this->workerOnly,
+            'execution' => $this->executionConfig?->getMode('') ?? 'legacy',
+            'executionFieldId' => $this->executionFieldId ?: preg_replace('/_model$/', '_execution_mode', $this->getModelFieldId()),
+        ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
+    }
+
     public function getSchemasJson(): string
     {
         $schemasByModel = $this->getProviderSchemasByModel();

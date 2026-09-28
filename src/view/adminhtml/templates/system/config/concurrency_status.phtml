@@ -1,12 +1,20 @@
 <?php
 /**
  * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
- *
- * @var \Hyva\Ai\Block\Adminhtml\System\Config\ConcurrencyStatusField $block
- * @var \Magento\Framework\Escaper $escaper
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
  */
+declare(strict_types=1);
+
+use Hyva\Ai\Block\Adminhtml\System\Config\ConcurrencyStatusField;
+use Magento\Framework\Escaper;
+
+/**
+ * @var ConcurrencyStatusField $block
+ * @var Escaper $escaper
+ */
+
 $activeCount = $block->getActiveLockCount();
 $maxSlots    = $block->getMaxSlots();
 $backendLabel = $block->getLockBackendLabel();
