@@ -10,4 +10,16 @@
     <preference for="Hyva\Ai\Api\ProviderResolverInterface" type="Hyva\Ai\Model\ProviderResolver" />
     <preference for="Hyva\Ai\Api\ProviderPoolInterface" type="Hyva\Ai\Model\ProviderPool" />
     <preference for="Hyva\Ai\Api\Provider\OptionsSchemaPoolInterface" type="Hyva\Ai\Model\Provider\OptionsSchemaPool"/>
+    <type name="Hyva\Ai\Api\ProviderInterface">
+        <plugin name="hyva_ai_execution" type="Hyva\Ai\Plugin\RouteProviderRequests"/>
+    </type>
+    <type name="Hyva\Ai\Api\ToolCapableProviderInterface">
+        <plugin name="hyva_ai_execution" type="Hyva\Ai\Plugin\RouteProviderRequests"/>
+    </type>
+    <type name="Hyva\Ai\Controller\Adminhtml\Ai\Process">
+        <plugin name="hyva_ai_handler_execution" type="Hyva\Ai\Plugin\UseHandlerExecution"/>
+    </type>
+    <type name="Hyva\Ai\Api\HandlerInterface">
+        <plugin name="hyva_ai_handler_execution" type="Hyva\Ai\Plugin\UseHandlerExecution"/>
+    </type>
 </config>
