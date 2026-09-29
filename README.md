@@ -46,6 +46,8 @@ or `default` inherits Settings. Translations offer PHP and worker overrides; CMS
 image generation offer a worker override because those flows require a worker. Image and
 content overrides are independent.
 
+The worker package includes Node and hosted-worker files and a PHP fallback. Use Node for local development and hosted workers for production. With AI Worker enabled and configured, an empty Worker URL selects PHP; a configured external worker takes priority, with PHP backup when Allow PHP Worker is enabled. PHP fallback is not recommended for streaming or production. The `php` execution mode above still means a direct provider request. See the [worker setup guide](https://docs.hyva.io/hyva-commerce/features/ai-worker/installation.html).
+
 `ExecutionConfig::getMode($feature)` resolves this precedence. Handler requests use the
 registered handler name as their feature ID; the controller scopes the configured check and
 the provider call together. Handler options also carry `_execution_feature` for server-side
@@ -54,7 +56,7 @@ callers. Scoped context is restored after each operation, including failures.
 Existing configuration paths and `model_options` JSON are unchanged. Existing `model=worker`
 selections with `underlying_provider` / `underlying_model` continue working. New selections
 can store the actual model ID. No data patch is required. Install the AI packages together;
-the provider and worker packages use the 1.1 base API. Refresh Magento configuration,
+the current provider and worker packages use the new base registries even where their Composer constraints still accept older releases. Refresh Magento configuration,
 generated dependency injection code and admin static assets as part of the normal deployment.
 
 Provider connection tests use the saved key and make a small direct request to the chosen
@@ -99,3 +101,13 @@ registries. Providers with a supported worker adapter declare `worker_adapter: t
 their `ProviderResolver` configuration. Removing a provider removes its choices. Connection tests belong to the provider
 package; DeepL uses its usage endpoint and distinguishes an unreadable saved key from a
 missing key. An unreadable key must be re-entered and saved on the current installation.
+
+### Provider streaming and image adapters
+
+Provider packages implement `Api\StreamDialectInterface` and, where supported,
+`Api\ImageDialectInterface`, registered in `Model\Provider\StreamDialectPool.dialects` and
+`Model\Provider\ImageDialectPool.dialects`. Contracts and shared stream state live in base AI;
+provider endpoints, model rules, message formats and image parsing live in each provider's
+`Model/Worker/` directory. These adapters make no HTTP calls themselves. Commerce AI Worker
+supplies transport, limits and job handling. The provider packages do not require AI Worker.
+OpenAI and xAI reuse `Model\Protocol\ChatCompletions` without depending on each other.

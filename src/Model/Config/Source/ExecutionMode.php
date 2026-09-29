@@ -15,7 +15,7 @@ class ExecutionMode implements OptionSourceInterface
     {
         $options = [
             ['value' => 'legacy', 'label' => __('Keep existing feature choices')],
-            ['value' => 'php', 'label' => __('PHP server (short requests)')],
+            ['value' => 'php', 'label' => __('Direct PHP (short requests)')],
         ];
         foreach ($this->transports as $value => $label) {
             $options[] = ['value' => $value, 'label' => __($label)];
