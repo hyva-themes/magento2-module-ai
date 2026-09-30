@@ -110,4 +110,4 @@ Provider packages implement `Api\StreamDialectInterface` and, where supported,
 provider endpoints, model rules, message formats and image parsing live in each provider's
 `Model/Worker/` directory. These adapters make no HTTP calls themselves. Commerce AI Worker
 supplies transport, limits and job handling. The provider packages do not require AI Worker.
-OpenAI and xAI reuse `Model\Protocol\ChatCompletions` without depending on each other.
+OpenAI uses the shared `Model\Protocol\ChatCompletions` helpers.
