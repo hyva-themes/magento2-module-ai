@@ -73,7 +73,7 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
 
             try {
                 $lockName = $this->concurrencyGuard->acquire();
-                $this->applyRequestTimeout();
+                $this->_session->writeClose();
 
                 $handlerData = $handlerInstance->getData($requestData);
                 $providerResponse = $providerInstance->process($handlerData, $handlerInstance->getOptions());
@@ -169,27 +169,6 @@ class Process extends Action implements HttpPostActionInterface, HttpGetActionIn
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
     {
         return null;
-    }
-
-    private function applyRequestTimeout(): void
-    {
-        $timeout = (int) ($this->scopeConfig->getValue(
-            ConcurrencyGuard::XML_PATH_REQUEST_TIMEOUT_SECONDS
-        ) ?? 0);
-
-        if ($timeout <= 0) {
-            return;
-        }
-
-        if (!function_exists('set_time_limit')) {
-            return;
-        }
-
-        try {
-            set_time_limit($timeout);
-        } catch (\Throwable $e) {
-            // Ignore failures; PHP configuration may disallow set_time_limit()
-        }
     }
 
     public function validateForCsrf(RequestInterface $request): ?bool

@@ -1,0 +1,58 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+declare(strict_types=1);
+
+use Hyva\Ai\Block\Adminhtml\System\Config\TestConnection;
+use Magento\Framework\Escaper;
+
+/**
+ * @var TestConnection $block
+ * @var Escaper $escaper
+ */
+
+$id = 'hyva-ai-test-' . $block->getProviderId();
+?>
+<div id="<?= $escaper->escapeHtmlAttr($id) ?>" class="hyva-ai-connection-test">
+    <?php if ($block->getFixedModel() !== ''): ?>
+    <input type="hidden" data-test-model value="<?= $escaper->escapeHtmlAttr($block->getFixedModel()) ?>">
+    <?php else: ?>
+    <label for="<?= $escaper->escapeHtmlAttr($id) ?>-model"><?= $escaper->escapeHtml(__('Test model')) ?></label>
+    <select id="<?= $escaper->escapeHtmlAttr($id) ?>-model" data-test-model>
+        <?php foreach ($block->getModels() as $model => $info): ?>
+            <option value="<?= $escaper->escapeHtmlAttr($model) ?>"><?= $escaper->escapeHtml($info['label']) ?></option>
+        <?php endforeach; ?>
+    </select>
+    <?php endif; ?>
+    <button type="button" class="action-default"><?= $escaper->escapeHtml(__('Test saved connection')) ?></button>
+    <p class="note"><?= $escaper->escapeHtml($block->getTestDescription()) ?></p>
+    <p role="status" aria-live="polite"></p>
+</div>
+<script>
+require(['jquery', 'mage/translate'], function ($, $t) {
+    const root = document.getElementById(<?= /* @noEscape */ json_encode($id) ?>);
+    const button = root.querySelector('button');
+    const status = root.querySelector('[role="status"]');
+    button.addEventListener('click', async () => {
+        button.disabled = true;
+        status.textContent = $t('Testing the saved connection…');
+        try {
+            const response = await fetch(<?= /* @noEscape */ json_encode($block->getUrl('hyva_ai/connection/test'), JSON_HEX_TAG | JSON_HEX_AMP) ?>, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ form_key: window.FORM_KEY, provider: <?= /* @noEscape */ json_encode($block->getProviderId()) ?>, model: root.querySelector('[data-test-model]').value })
+            });
+            const data = await response.json();
+            status.textContent = data.message || $t('The connection test could not finish.');
+        } catch (_) {
+            status.textContent = $t('The connection test could not finish. Reload this page and try again.');
+        } finally {
+            button.disabled = false;
+        }
+    });
+});
+</script>

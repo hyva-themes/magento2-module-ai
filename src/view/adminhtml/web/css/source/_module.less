@@ -1,8 +1,172 @@
-.admin__page-nav._collapsed.hyva-ai-config-tab .title,
-.admin__page-nav._collapsed._show.hyva-ai-config-tab .title {
-    background-image: url('Hyva_Ai::images/hyva-ai-logo.svg');
-    background-position: 15px center;
-    background-repeat: no-repeat;
-    background-size: 20px auto;
-    padding-left: 5.2rem;
+@hyva-ai-logo: 'Hyva_Ai::images/hyva-ai-logo.svg';
+@hyva-ai-max-width: 560px;
+@hyva-ai-gap: 8px;
+@hyva-ai-padding-left: 5.2rem;
+@hyva-ai-background-size: 20px auto;
+@hyva-ai-label-weight: 600;
+@hyva-ai-label-margin-top: 8px;
+@hyva-ai-note-line-height: 1.5;
+@hyva-ai-note-margin: 6px 0;
+@hyva-ai-older-gap: 6px;
+@hyva-ai-search-color: #626262;
+@hyva-ai-label-margin-bottom: 6px;
+@hyva-ai-option-margin-bottom: 18px;
+@hyva-ai-overview-border: #e2e4e8;
+@hyva-ai-overview-surface: #f7f8fa;
+@hyva-ai-overview-heading: #252a32;
+@hyva-ai-overview-text: #5d636e;
+
+.admin__page-nav {
+    &._collapsed.hyva-ai-config-tab .title,
+    &._collapsed._show.hyva-ai-config-tab .title {
+        background-image: url(@hyva-ai-logo);
+        background-position: 15px center;
+        background-repeat: no-repeat;
+        background-size: @hyva-ai-background-size;
+        padding-left: @hyva-ai-padding-left;
+    }
+}
+
+.hyva-ai-model-source,
+textarea[hidden] {
+    display: none !important;
+}
+
+.hyva-ai-picker,
+.hyva-ai-options {
+    max-width: @hyva-ai-max-width;
+}
+
+.hyva-ai-picker {
+    display: grid;
+    gap: @hyva-ai-gap;
+
+    > label:not(.hyva-ai-older) {
+        font-weight: @hyva-ai-label-weight;
+        margin-top: @hyva-ai-label-margin-top;
+    }
+
+    select,
+    input[type="search"] {
+        width: 100%;
+    }
+
+    .hyva-ai-older {
+        display: flex;
+        gap: @hyva-ai-older-gap;
+        align-items: center;
+        font-weight: normal;
+        margin-top: @hyva-ai-label-margin-top;
+    }
+
+    .hyva-ai-search-label {
+        font-weight: normal !important;
+        color: @hyva-ai-search-color;
+    }
+
+    .note {
+        line-height: @hyva-ai-note-line-height;
+        margin: @hyva-ai-note-margin;
+    }
+}
+
+.hyva-ai-option {
+    margin: 0 0 @hyva-ai-option-margin-bottom;
+
+    > label {
+        display: block;
+        margin-bottom: @hyva-ai-label-margin-bottom;
+        font-weight: @hyva-ai-label-weight;
+    }
+
+    .note {
+        line-height: @hyva-ai-note-line-height;
+        margin: @hyva-ai-note-margin;
+    }
+}
+
+.hyva-ai-overview {
+    margin: 0 0 28px;
+    border: 1px solid @hyva-ai-overview-border;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #fff;
+    color: @hyva-ai-overview-heading;
+    line-height: 1.6;
+
+    &-header {
+        padding: 22px 28px;
+        background: @hyva-ai-overview-surface;
+        border-bottom: 1px solid @hyva-ai-overview-border;
+
+        h2 {
+            color: @hyva-ai-overview-heading;
+            font-size: 22px;
+            font-weight: @hyva-ai-label-weight;
+            margin: 0 0 5px;
+        }
+
+        p {
+            color: @hyva-ai-overview-text;
+            margin: 0;
+        }
+    }
+
+    &-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 28px;
+        list-style: none;
+        padding: 26px 28px;
+        margin: 0;
+
+        li {
+            display: flex;
+            gap: 12px;
+            margin: 0;
+
+            > span {
+                display: grid;
+                place-items: center;
+                flex: 0 0 30px;
+                height: 30px;
+                border: 1px solid @hyva-ai-overview-border;
+                border-radius: 50%;
+                color: @hyva-ai-overview-heading;
+                background: @hyva-ai-overview-surface;
+                font-weight: @hyva-ai-label-weight;
+            }
+        }
+
+        h3 {
+            font-size: 15px;
+            font-weight: @hyva-ai-label-weight;
+            margin: 2px 0 6px;
+        }
+
+        p {
+            font-size: 13px;
+            color: @hyva-ai-overview-text;
+            margin: 0;
+        }
+
+        @media (max-width: 1100px) {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+
+    &-note {
+        background: @hyva-ai-overview-surface;
+        border-top: 1px solid @hyva-ai-overview-border;
+        padding: 14px 28px;
+        margin: 0;
+        font-size: 13px;
+        color: @hyva-ai-overview-text;
+    }
+}
+
+.hyva-ai-connection-test select {
+    max-width: 100%;
+    margin: 8px 0;
 }

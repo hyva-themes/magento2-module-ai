@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Config\Model\Config\Structure\Element\Group">
+        <plugin name="hyva_ai_provider_group_label" type="Hyva\Ai\Plugin\ProviderGroupLabel"/>
+    </type>
+</config>

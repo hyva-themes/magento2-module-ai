@@ -1,0 +1,35 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+
+/** @var Escaper $escaper */
+?>
+<section class="hyva-ai-overview"
+    aria-labelledby="hyva-ai-overview-title">
+    <div class="hyva-ai-overview-header">
+        <h2 id="hyva-ai-overview-title"><?= $escaper->escapeHtml(__('Set up AI for your store')) ?></h2>
+        <p><?= $escaper->escapeHtml(__('Write, improve, translate and create images — with the providers you choose.')) ?></p>
+    </div>
+    <ol class="hyva-ai-overview-steps">
+        <li><span aria-hidden="true">1</span><div>
+            <h3><?= $escaper->escapeHtml(__('Connect a provider')) ?></h3>
+            <p><?= $escaper->escapeHtml(__('Add an API key below. You only need one provider to get started; usage is billed by that provider.')) ?></p>
+        </div></li>
+        <li><span aria-hidden="true">2</span><div>
+            <h3><?= $escaper->escapeHtml(__('Choose your default')) ?></h3>
+            <p><?= $escaper->escapeHtml(__('Choose how requests run. PHP handles short tasks; a worker handles longer generation work.')) ?></p>
+        </div></li>
+        <li><span aria-hidden="true">3</span><div>
+            <h3><?= $escaper->escapeHtml(__('Set up each feature')) ?></h3>
+            <p><?= $escaper->escapeHtml(__('Open Hyvä CMS to choose models for translations, content and images. Override the default only where you need to.')) ?></p>
+        </div></li>
+    </ol>
+    <p class="hyva-ai-overview-note"><?= $escaper->escapeHtml(__('You stay in control: review generated content before publishing. Existing settings and saved models are kept when you upgrade.')) ?></p>
+</section>
