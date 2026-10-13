@@ -19,7 +19,7 @@ use Magento\Framework\Exception\LocalizedException;
 
 class Test extends Action implements HttpPostActionInterface
 {
-    public const ADMIN_RESOURCE = 'Magento_Config::config';
+    public const ADMIN_RESOURCE = 'Hyva_Ai::config';
 
     public function __construct(
         Context $context,

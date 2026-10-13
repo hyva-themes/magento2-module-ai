@@ -16,7 +16,7 @@
             <class>separator-top</class>
             <label>Settings</label>
             <tab>hyva_ai</tab>
-            <resource>Magento_Backend::content</resource>
+            <resource>Hyva_Ai::config</resource>
             <group id="overview" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Getting started</label>
                 <frontend_model>Hyva\Ai\Block\Adminhtml\System\Config\Introduction</frontend_model>
